@@ -1,0 +1,47 @@
+---
+- name: Install Python 3 and pip3
+  hosts: all
+  become: true  # Use become to run tasks with sudo privileges
+
+  tasks:
+    - name: Update package cache (Ubuntu)
+      apt:
+        update_cache: yes
+      when: ansible_distribution == "Ubuntu"
+
+    - name: Install Python 3 and pip3 (Ubuntu)
+      apt:
+        name:
+          - python3
+          - python3-pip
+        state: latest
+      when: ansible_distribution == "Ubuntu"
+
+    - name: Install Python 3 and pip3 (CentOS)
+      yum:
+        name:
+          - python3
+          - python3-pip
+        state: latest
+      when: ansible_distribution == "CentOS"
+
+    - name: Set Python 3 as default (CentOS)
+      ansible.builtin.command: update-alternatives --install /usr/bin/python python /usr/bin/python3 1
+      when: ansible_distribution == "Ubuntu"
+
+
+    - name: Set Python 3 as default (Ubuntu)
+      ansible.builtin.command: update-alternatives --install /usr/bin/python python /usr/bin/python3 1
+      when: ansible_distribution == "Ubuntu"
+
+    - name: Install OpenJDK (CentOS)
+      ansible.builtin.package:
+        name: java-1.8.0-openjdk
+        state: present
+      when: ansible_distribution == "CentOS"
+
+    - name: Install OpenJDK on Ubuntu
+      ansible.builtin.package:
+        name: openjdk-8-jdk
+        state: present
+      when: ansible_distribution == "Ubuntu"
